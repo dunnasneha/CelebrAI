@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Checklist & Negotiation — {{ event.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 32px;">
+  <!-- Breadcrumbs & Quick Nav -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <a href="{{ url_for('event_details', event_id=event.id) }}" style="color: var(--purple-800); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+      &larr; Back to Blueprint
+    </a>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="openAddVendorModal()" class="btn btn-primary btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add Custom Vendor</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Workspace Sub-navigation Tabs -->
+  <div class="tabs-nav">
+    <a href="{{ url_for('event_details', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Overview & Blueprint</span>
+    </a>
+    <a href="{{ url_for('event_budget', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Smart Budget Planner</span>
+    </a>
+    <a href="{{ url_for('event_timeline', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Preparation Timeline</span>
+    </a>
+    <a href="{{ url_for('event_vendors', event_id=event.id) }}" class="tab-btn active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span>Vendor Checklist</span>
+    </a>
+  </div>
+
+  <!-- Header Card -->
+  <div class="card" style="padding: 24px 28px; margin-bottom: 28px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 1.4rem; color: var(--purple-950);">Vendor Strategy & Negotiation Guide</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+          Realistic selection criteria and vetting questions for {{ event.name }}. Update booking statuses as you confirm suppliers.
+        </p>
+      </div>
+      <div>
+        <span class="badge badge-gold">Planning Estimates &bull; Not Verified Quotes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Filter Toolbar -->
+  <div style="display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px;">
+    <button class="chip" onclick="filterVendors('ALL', this)" style="font-weight: 700;">All Vendors</button>
+    <button class="chip" onclick="filterVendors('Not Started', this)">Not Started</button>
+    <button class="chip" onclick="filterVendors('Contacted', this)">Contacted</button>
+    <button class="chip" onclick="filterVendors('Booked', this)">Booked</button>
+  </div>
+
+  <!-- Vendors Grid -->
+  <div id="vendorsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; margin-bottom: 40px;">
+    {% if vendors %}
+      {% for v in vendors %}
+        <div class="card vendor-card" data-id="{{ v.id }}" data-status="{{ v.status }}" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <!-- Header: Category & Est Cost -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+              <div>
+                <span class="badge badge-purple" style="font-size: 0.75rem; margin-bottom: 6px;">{{ v.category }}</span>
+                <h3 style="font-size: 1.25rem; color: var(--purple-900);">{{ v.category }} Services</h3>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Est. Cost</div>
+                <div style="font-weight: 800; font-size: 1.15rem; color: var(--purple-900);">
+                  {{ v.estimated_cost | inr }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Booking Status Selector -->
+            <div style="margin-bottom: 16px; background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+              <label style="font-size: 0.85rem; font-weight: 700; color: var(--purple-950);">Booking Status:</label>
+              <select class="form-control" style="width: auto; padding: 4px 10px; font-size: 0.85rem; font-weight: 600;" onchange="updateVendorStatus({{ v.id }}, this.value)">
+                <option value="Not Started" {% if v.status == 'Not Started' %}selected{% endif %}>Not Started</option>
+                <option value="Contacted" {% if v.status == 'Contacted' %}selected{% endif %}>Contacted</option>
+                <option value="Booked" {% if v.status == 'Booked' %}selected{% endif %}>Booked</option>
+              </select>
+            </div>
+
+            <!-- Criteria -->
+            {% if v.criteria %}
+              <div style="margin-bottom: 12px; font-size: 0.88rem;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--gold-700); text-transform: uppercase; margin-bottom: 2px;">What to Look For:</div>
+                <p style="color: var(--text-secondary); line-height: 1.5;">{{ v.criteria }}</p>
+              </div>
+            {% endif %}
+
+            <!-- Questions to Ask -->
+            {% if v.questions_to_ask %}
+              <div style="margin-bottom: 16px; background: #FFFBEB; border: 1px solid #FEF3C7; padding: 12px 14px; border-radius: var(--radius-sm);">
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--gold-700); text-transform: uppercase; margin-bottom: 2px;">Questions to Ask:</div>
+                <p style="color: #92400E; font-size: 0.85rem; line-height: 1.5;">{{ v.questions_to_ask }}</p>
+              </div>
+            {% endif %}
+
+            <!-- User Contact & Notes Editable Fields -->
+            <div style="margin-bottom: 12px;">
+              <input type="text" class="form-control vendor-contact-input" value="{{ v.contact_info }}" placeholder="Vendor Contact (Name, Phone, Email)..." style="font-size: 0.85rem; padding: 6px 10px; margin-bottom: 6px;" onchange="saveVendorField({{ v.id }}, 'contact_info', this.value)">
+              <input type="text" class="form-control vendor-notes-input" value="{{ v.notes }}" placeholder="Notes / Agreement details..." style="font-size: 0.85rem; padding: 6px 10px;" onchange="saveVendorField({{ v.id }}, 'notes', this.value)">
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 12px; margin-top: 8px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+              Deadline: <b>{{ v.deadline if v.deadline else 'Flexible' }}</b>
+            </span>
+            <button onclick="deleteVendorItem({{ v.id }})" class="btn btn-secondary btn-sm" style="padding: 4px 8px; color: var(--danger); font-size: 0.75rem;" title="Delete Vendor">
+              Remove
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="card" style="text-align: center; padding: 40px; grid-column: 1 / -1;">
+        <p style="color: var(--text-muted); font-size: 0.95rem;">No vendor checklist items found.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Add Custom Vendor Modal -->
+<div class="modal-overlay" id="addVendorModal">
+  <div class="modal-card" style="max-width: 520px;">
+    <button class="modal-close" onclick="closeModal('addVendorModal')">&times;</button>
+    <h3 style="font-size: 1.3rem; color: var(--purple-900); margin-bottom: 16px;">Add Custom Vendor Item</h3>
+
+    <form id="addVendorForm" onsubmit="handleAddVendor(event)">
+      <div class="form-group">
+        <label class="form-label" for="newVendorCategory">Vendor Category <span class="required">*</span></label>
+        <input type="text" id="newVendorCategory" class="form-control" placeholder="e.g. Mehendi Artist, Drone Pilot, Fireworks" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="newVendorCost">Estimated Cost in INR (₹)</label>
+          <input type="number" id="newVendorCost" class="form-control" placeholder="15000" min="0" value="15000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newVendorDeadline">Booking Deadline</label>
+          <input type="date" id="newVendorDeadline" class="form-control" value="{{ event.event_date }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="newVendorCriteria">Selection Criteria / Requirements</label>
+        <textarea id="newVendorCriteria" class="form-control" rows="2" placeholder="Experience level, style, equipment..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="newVendorQuestions">Questions to Ask</label>
+        <textarea id="newVendorQuestions" class="form-control" rows="2" placeholder="What are your deposit terms, overtime charges..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('addVendorModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Add Vendor</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const EVENT_ID = {{ event.id }};
+</script>
+<script src="{{ url_for('static', filename='js/vendors.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} — CelebrAI Blueprint{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 32px;">
+  <!-- Breadcrumbs & Quick Nav -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+    <a href="{{ url_for('dashboard') }}" style="color: var(--purple-800); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+      &larr; Back to Dashboard
+    </a>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button onclick="openEditEventModal()" class="btn btn-secondary btn-sm" id="editEventBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>Edit Event Details</span>
+      </button>
+      <a href="{{ url_for('api_download_pdf', event_id=event.id) }}" class="btn btn-gold btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Download Event Plan (PDF)</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Event Header Banner -->
+  <div class="card" style="padding: 32px; background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-subtle) 100%); border: 1.5px solid var(--border-subtle); margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <span class="badge {% if event.event_type == 'Wedding' %}badge-gold{% elif event.event_type == 'Birthday' %}badge-pink{% else %}badge-purple{% endif %}">
+            {{ event.event_type }}
+          </span>
+          <span class="badge badge-neutral">{{ event.planning_style }} Style</span>
+          <span class="badge badge-neutral">{{ event.venue_preference }}</span>
+          <span class="badge badge-neutral">Status: {{ event.status }}</span>
+        </div>
+        <h1 style="font-size: 2.3rem; color: var(--purple-950); margin-bottom: 8px;" id="dispEventName">
+          {{ event.name }}
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; display: flex; flex-wrap: wrap; gap: 18px; align-items: center;">
+          <span>📍 <b>Location:</b> <span id="dispEventLocation">{{ event.location }}</span></span>
+          <span>📅 <b>Date:</b> <span id="dispEventDate">{{ event.event_date }}</span></span>
+          <span>👥 <b>Guests:</b> <span id="dispEventGuests">{{ event.guests }}</span></span>
+          <span>🍽️ <b>Cuisine:</b> {{ event.food_preference }}</span>
+        </p>
+      </div>
+
+      <!-- Financial Snapshot Widget -->
+      <div style="background: var(--purple-50); border: 1px solid var(--purple-100); padding: 18px 24px; border-radius: var(--radius-lg); text-align: right; min-width: 220px;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--purple-800); text-transform: uppercase; margin-bottom: 2px;">Total Budget</div>
+        <div style="font-size: 1.9rem; font-weight: 800; color: var(--purple-950);" id="dispEventBudget">{{ event.total_budget | inr }}</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+          Contingency: {{ budget_summary.contingency_formatted }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workspace Sub-navigation Tabs -->
+  <div class="tabs-nav">
+    <a href="{{ url_for('event_details', event_id=event.id) }}" class="tab-btn active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Overview & Blueprint</span>
+    </a>
+    <a href="{{ url_for('event_budget', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Smart Budget Planner</span>
+    </a>
+    <a href="{{ url_for('event_timeline', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Preparation Timeline</span>
+    </a>
+    <a href="{{ url_for('event_vendors', event_id=event.id) }}" class="tab-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span>Vendor Checklist</span>
+    </a>
+  </div>
+
+  <!-- GenAI Quick Actions Toolbar -->
+  <div class="card" style="padding: 16px 20px; margin-bottom: 28px; background: linear-gradient(135deg, var(--purple-950) 0%, var(--purple-900) 100%); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="color: var(--gold-400); display: flex;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
+      </span>
+      <div>
+        <div style="font-weight: 700; font-size: 0.95rem;">GenAI Interactive Assistant Tools</div>
+        <div style="font-size: 0.8rem; color: #E9D5FF;">Generate custom variations or ask questions about this event</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <button onclick="openThemeModal()" class="btn btn-secondary btn-sm" style="color: var(--purple-950); font-weight: 600;">
+        Improve Theme
+      </button>
+      <button onclick="openInvitationModal()" class="btn btn-secondary btn-sm" style="color: var(--purple-950); font-weight: 600;">
+        Generate Invites
+      </button>
+      <button onclick="openActivitiesModal()" class="btn btn-secondary btn-sm" style="color: var(--purple-950); font-weight: 600;">
+        Suggest Activities
+      </button>
+      <button onclick="openChatDrawer()" class="btn btn-gold btn-sm" style="font-weight: 700;">
+        Ask CelebrAI
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid of Blueprint Sections -->
+  <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 28px; margin-bottom: 40px;">
+    <!-- Left Column: Concept, Story, Menu -->
+    <div style="display: flex; flex-direction: column; gap: 28px;">
+      <!-- Section 1: Overview & Concept -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Event Concept & Atmosphere</span>
+          </h2>
+          <span class="badge badge-purple" id="dispEventTheme">{{ event.theme }}</span>
+        </div>
+
+        {% if event.overview %}
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold-700); text-transform: uppercase; margin-bottom: 4px;">Atmosphere & Vibe</div>
+            <p style="font-size: 1rem; color: var(--text-primary); font-weight: 500; line-height: 1.6; margin-bottom: 14px;">
+              {{ event.overview.atmosphere }}
+            </p>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--purple-900); text-transform: uppercase; margin-bottom: 4px;">Creative Vision</div>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+              {{ event.overview.personalized_description }}
+            </p>
+          </div>
+
+          {% if event.overview.key_considerations %}
+            <div style="background: var(--bg-cream); border: 1px solid var(--border-subtle); padding: 16px 20px; border-radius: var(--radius-md);">
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--purple-900); margin-bottom: 8px;">Key Planning Considerations:</div>
+              <ul style="font-size: 0.9rem; color: var(--text-secondary); padding-left: 20px; line-height: 1.7;">
+                {% for item in event.overview.key_considerations %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Section 2: Curated Banquet & Menu -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            <span>Curated Banquet & Menu Highlights</span>
+          </h2>
+          <span class="badge badge-gold">{{ event.food_preference }}</span>
+        </div>
+
+        {% if event.creative and event.creative.menu_suggestions %}
+          {% set menu = event.creative.menu_suggestions %}
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <!-- Welcome Drinks -->
+            {% if menu.welcome_drinks %}
+              <div style="background: var(--bg-cream); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-700); text-transform: uppercase; margin-bottom: 6px;">Welcome Drinks</div>
+                <ul style="font-size: 0.88rem; color: var(--text-primary); padding-left: 16px; line-height: 1.6;">
+                  {% for item in menu.welcome_drinks %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <!-- Appetizers -->
+            {% if menu.appetizers %}
+              <div style="background: var(--bg-cream); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--purple-900); text-transform: uppercase; margin-bottom: 6px;">Appetizers & Bites</div>
+                <ul style="font-size: 0.88rem; color: var(--text-primary); padding-left: 16px; line-height: 1.6;">
+                  {% for item in menu.appetizers %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <!-- Mains -->
+            {% if menu.mains %}
+              <div style="background: var(--bg-cream); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--purple-900); text-transform: uppercase; margin-bottom: 6px;">Main Course Feast</div>
+                <ul style="font-size: 0.88rem; color: var(--text-primary); padding-left: 16px; line-height: 1.6;">
+                  {% for item in menu.mains %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <!-- Desserts -->
+            {% if menu.desserts %}
+              <div style="background: var(--bg-cream); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--pink-600); text-transform: uppercase; margin-bottom: 6px;">Desserts & Sweets</div>
+                <ul style="font-size: 0.88rem; color: var(--text-primary); padding-left: 16px; line-height: 1.6;">
+                  {% for item in menu.desserts %}
+                    <li>{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <p style="color: var(--text-muted); font-size: 0.9rem;">No menu suggestions configured.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Column: Color Palette, Invitation Draft, Risk Safeguards -->
+    <div style="display: flex; flex-direction: column; gap: 28px;">
+      <!-- Section 3: Palette & Styling -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/></svg>
+            <span>Color Palette & Decor</span>
+          </h2>
+        </div>
+
+        {% if event.creative and event.creative.color_palette %}
+          <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+            {% for c in event.creative.color_palette %}
+              <div onclick="copyToClipboard('{{ c.hex }}', 'Copied {{ c.hex }}!')" style="flex: 1; min-width: 90px; text-align: center; cursor: pointer;" title="Click to copy {{ c.hex }}">
+                <div style="height: 48px; background: {{ c.hex }}; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); margin-bottom: 6px; box-shadow: var(--shadow-sm);"></div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--purple-950); line-height: 1.2;">{{ c.name }}</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">{{ c.hex }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if event.creative and event.creative.decorations %}
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--purple-900); margin-bottom: 8px;">Key Decor Elements:</div>
+            <ul style="font-size: 0.88rem; color: var(--text-secondary); padding-left: 18px; line-height: 1.7;">
+              {% for d in event.creative.decorations %}
+                <li>{{ d }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Section 4: Personalized Invitation Draft -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>Invitation Message Draft</span>
+          </h2>
+          <button onclick="copyToClipboard(document.getElementById('invitationDraftText').innerText, 'Invitation text copied!')" class="btn btn-secondary btn-sm">
+            Copy Text
+          </button>
+        </div>
+        <div id="invitationDraftText" style="background: var(--bg-cream); border: 1px solid var(--border-subtle); padding: 18px; border-radius: var(--radius-md); font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; font-style: italic;">
+          {{ event.creative.invitation_draft if event.creative else 'Invitation draft not available.' }}
+        </div>
+      </div>
+
+      <!-- Section 5: Risk Management & Safeguards -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Risk Management & Safeguards</span>
+          </h2>
+        </div>
+
+        {% if event.risk %}
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            {% if event.risk.weather_contingency %}
+              <div style="font-size: 0.88rem;">
+                <span style="font-weight: 700; color: var(--purple-950);">☔ Weather Contingency:</span>
+                <p style="color: var(--text-secondary); margin-top: 2px;">{{ event.risk.weather_contingency }}</p>
+              </div>
+            {% endif %}
+
+            {% if event.risk.backup_venue %}
+              <div style="font-size: 0.88rem;">
+                <span style="font-weight: 700; color: var(--purple-950);">🏛️ Backup Venue Plan:</span>
+                <p style="color: var(--text-secondary); margin-top: 2px;">{{ event.risk.backup_venue }}</p>
+              </div>
+            {% endif %}
+
+            {% if event.risk.budget_overruns %}
+              <div style="font-size: 0.88rem;">
+                <span style="font-weight: 700; color: var(--purple-950);">💰 Budget Overrun Safeguard:</span>
+                <p style="color: var(--text-secondary); margin-top: 2px;">{{ event.risk.budget_overruns }}</p>
+              </div>
+            {% endif %}
+
+            {% if event.risk.emergency_supplies %}
+              <div style="font-size: 0.88rem;">
+                <span style="font-weight: 700; color: var(--purple-950);">🩹 Emergency Supplies Kit:</span>
+                <p style="color: var(--text-secondary); margin-top: 2px;">{{ event.risk.emergency_supplies }}</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- GENAI INTERACTIVE TOOL MODALS -->
+<!-- ============================================== -->
+
+<!-- 1. Improve Theme Modal -->
+<div class="modal-overlay" id="themeModal">
+  <div class="modal-card" style="max-width: 650px;">
+    <button class="modal-close" onclick="closeModal('themeModal')" aria-label="Close modal">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="color: var(--gold-500);"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/></svg></span>
+      <h3 style="font-size: 1.35rem; color: var(--purple-900);">AI Theme Transformation</h3>
+    </div>
+    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 20px;">
+      Explore three fresh, creative theme concepts custom-designed for this event style and budget:
+    </p>
+
+    <div id="themeResultsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+      <div style="text-align: center; padding: 20px; color: var(--text-muted);">Loading creative themes...</div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('themeModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Generate Invitations Modal -->
+<div class="modal-overlay" id="invitationModal">
+  <div class="modal-card" style="max-width: 650px;">
+    <button class="modal-close" onclick="closeModal('invitationModal')" aria-label="Close modal">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="color: var(--pink-600);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+      <h3 style="font-size: 1.35rem; color: var(--purple-900);">AI Invitation Drafter</h3>
+    </div>
+    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px;">
+      Select and copy your favorite invitation draft:
+    </p>
+
+    <div id="invitationResultsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+      <div style="text-align: center; padding: 20px; color: var(--text-muted);">Generating multi-tone invitations...</div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('invitationModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Suggest Activities Modal -->
+<div class="modal-overlay" id="activitiesModal">
+  <div class="modal-card" style="max-width: 650px;">
+    <button class="modal-close" onclick="closeModal('activitiesModal')" aria-label="Close modal">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="color: var(--gold-600);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span>
+      <h3 style="font-size: 1.35rem; color: var(--purple-900);">Interactive Guest Activities & Games</h3>
+    </div>
+    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px;">
+      Curated experiences tailored to your {{ event.guests }} guests and celebration theme:
+    </p>
+
+    <div id="activitiesResultsContainer" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+      <div style="text-align: center; padding: 20px; color: var(--text-muted);">Generating curated activities...</div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('activitiesModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Ask CelebrAI Chat Drawer / Modal -->
+<div class="modal-overlay" id="chatModal">
+  <div class="modal-card" style="max-width: 600px; display: flex; flex-direction: column; height: 80vh;">
+    <button class="modal-close" onclick="closeModal('chatModal')" aria-label="Close modal">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+      <div style="width: 36px; height: 36px; background: var(--purple-900); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--gold-400);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
+      </div>
+      <div>
+        <h3 style="font-size: 1.2rem; color: var(--purple-900);">Ask CelebrAI Concierge</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Expert guidance tailored to "{{ event.name }}"</p>
+      </div>
+    </div>
+
+    <!-- Chat messages window -->
+    <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 12px 4px; display: flex; flex-direction: column; gap: 12px;">
+      <div style="background: var(--purple-50); border: 1px solid var(--purple-100); padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.9rem; color: var(--purple-950);">
+        👋 Hello! I am your AI event concierge for <b>{{ event.name }}</b>. Ask me anything about vendor negotiations, menu pairings, rain contingencies, or guest seating!
+      </div>
+    </div>
+
+    <!-- Chat input -->
+    <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-top: 8px;">
+      <input type="text" id="chatInput" class="form-control" placeholder="Ask a question about your plan..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+      <button onclick="sendChatMessage()" class="btn btn-primary" id="chatSendBtn" style="padding: 10px 18px;" aria-label="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Edit Event Details Modal -->
+<div class="modal-overlay" id="editEventModal">
+  <div class="modal-card" style="max-width: 600px;">
+    <button class="modal-close" onclick="closeModal('editEventModal')" aria-label="Close modal">&times;</button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="color: var(--purple-800);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+      <h3 style="font-size: 1.35rem; color: var(--purple-900);">Edit Event Details</h3>
+    </div>
+
+    <form id="editEventForm" onsubmit="handleSaveEventDetails(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editName">Event Name <span class="required">*</span></label>
+          <input type="text" id="editName" class="form-control" value="{{ event.name }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editType">Event Type <span class="required">*</span></label>
+          <select id="editType" class="form-control" required>
+            <option value="Wedding" {% if event.event_type == 'Wedding' %}selected{% endif %}>Wedding</option>
+            <option value="Birthday" {% if event.event_type == 'Birthday' %}selected{% endif %}>Birthday</option>
+            <option value="Anniversary" {% if event.event_type == 'Anniversary' %}selected{% endif %}>Anniversary</option>
+            <option value="College Event" {% if event.event_type == 'College Event' %}selected{% endif %}>College Event</option>
+            <option value="Community Event" {% if event.event_type == 'Community Event' %}selected{% endif %}>Community Event</option>
+            <option value="Festival" {% if event.event_type == 'Festival' %}selected{% endif %}>Festival</option>
+            <option value="Other" {% if event.event_type == 'Other' %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editDate">Event Date <span class="required">*</span></label>
+          <input type="date" id="editDate" class="form-control" value="{{ event.event_date }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editLocation">Location / City <span class="required">*</span></label>
+          <input type="text" id="editLocation" class="form-control" value="{{ event.location }}" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editGuests">Guests <span class="required">*</span></label>
+          <input type="number" id="editGuests" class="form-control" value="{{ event.guests }}" min="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editBudget">Total Budget (INR ₹) <span class="required">*</span></label>
+          <input type="number" id="editBudget" class="form-control" value="{{ event.total_budget | round(0) }}" min="1000" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editTheme">Preferred Theme</label>
+          <input type="text" id="editTheme" class="form-control" value="{{ event.theme }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editStatus">Planning Status</label>
+          <select id="editStatus" class="form-control">
+            <option value="Planning" {% if event.status == 'Planning' %}selected{% endif %}>Planning</option>
+            <option value="In Progress" {% if event.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+            <option value="Ready" {% if event.status == 'Ready' %}selected{% endif %}>Ready</option>
+            <option value="Completed" {% if event.status == 'Completed' %}selected{% endif %}>Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('editEventModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const EVENT_ID = {{ event.id }};
+  const EVENT_NAME = "{{ event.name | replace('"', '\\"') }}";
+
+  function openEditEventModal() {
+    document.getElementById('editEventModal').classList.add('active');
+  }
+
+  async function handleSaveEventDetails(e) {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('editName').value.trim(),
+      event_type: document.getElementById('editType').value,
+      event_date: document.getElementById('editDate').value,
+      location: document.getElementById('editLocation').value.trim(),
+      guests: parseInt(document.getElementById('editGuests').value, 10),
+      total_budget: parseFloat(document.getElementById('editBudget').value),
+      theme: document.getElementById('editTheme').value.trim(),
+      status: document.getElementById('editStatus').value
+    };
+
+    try {
+      const res = await fetch(`/api/events/${EVENT_ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Event details updated successfully!', 'success');
+        closeModal('editEventModal');
+        // Update DOM
+        document.getElementById('dispEventName').innerText = payload.name;
+        document.getElementById('dispEventLocation').innerText = payload.location;
+        document.getElementById('dispEventDate').innerText = payload.event_date;
+        document.getElementById('dispEventGuests').innerText = payload.guests;
+        document.getElementById('dispEventBudget').innerText = formatINR(payload.total_budget);
+        if (document.getElementById('dispEventTheme')) {
+          document.getElementById('dispEventTheme').innerText = payload.theme;
+        }
+      } else {
+        showToast(data.error || 'Failed to update event', 'error');
+      }
+    } catch (err) {
+      showToast('Server communication error', 'error');
+    }
+  }
+</script>
+<script src="{{ url_for('static', filename='js/ai_tools.js') }}"></script>
+{% endblock %}

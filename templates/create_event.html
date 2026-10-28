@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Create Event Plan — CelebrAI{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px; max-width: 900px;">
+  <!-- Header -->
+  <div style="text-align: center; margin-bottom: 36px;">
+    <span class="badge badge-gold" style="margin-bottom: 8px;">Intelligent Event Architect</span>
+    <h1 style="font-size: 2.5rem; margin-bottom: 8px;">Design Your Celebration</h1>
+    <p style="color: var(--text-secondary); font-size: 1rem; max-width: 600px; margin: 0 auto;">
+      Fill in your celebration specifications below. CelebrAI's generative engine will allocate an authoritative budget in INR, schedule milestone deadlines, and design creative themes.
+    </p>
+  </div>
+
+  <!-- Creation Form Card -->
+  <div class="card" style="padding: 36px; border: 1.5px solid var(--border-subtle); position: relative;">
+    <form id="createEventForm" novalidate>
+      <!-- Section 1: Basic Event Identity -->
+      <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 style="font-size: 1.25rem; color: var(--purple-900); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <span style="width: 28px; height: 28px; background: var(--purple-100); color: var(--purple-800); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-family: sans-serif;">1</span>
+          Event Overview & Timing
+        </h3>
+
+        <div class="form-row">
+          <!-- 1. Event Name -->
+          <div class="form-group">
+            <label class="form-label" for="eventName">Event Name <span class="required">*</span></label>
+            <input type="text" id="eventName" name="name" class="form-control" placeholder="e.g. Diya's 25th Birthday Bash" required>
+            <div class="form-hint">Give your celebration a memorable name.</div>
+            <div class="form-error" id="nameError">Please enter an event name.</div>
+          </div>
+
+          <!-- 2. Event Type -->
+          <div class="form-group">
+            <label class="form-label" for="eventType">Event Type <span class="required">*</span></label>
+            <select id="eventType" name="event_type" class="form-control" required>
+              <option value="">Select Event Type</option>
+              <option value="Wedding">Wedding</option>
+              <option value="Birthday">Birthday</option>
+              <option value="Anniversary">Anniversary</option>
+              <option value="College Event">College Event</option>
+              <option value="Community Event">Community Event</option>
+              <option value="Festival">Festival</option>
+              <option value="Other">Other</option>
+            </select>
+            <div class="form-error" id="typeError">Please select an event type.</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- 3. Event Date -->
+          <div class="form-group">
+            <label class="form-label" for="eventDate">Event Date <span class="required">*</span></label>
+            <input type="date" id="eventDate" name="event_date" class="form-control" required>
+            <div class="form-hint">Timeline milestones will calculate relative to this target date.</div>
+            <div class="form-error" id="dateError">Please select a valid future event date.</div>
+          </div>
+
+          <!-- 4. Location -->
+          <div class="form-group">
+            <label class="form-label" for="location">City or Location <span class="required">*</span></label>
+            <input type="text" id="location" name="location" class="form-control" placeholder="e.g. Mumbai, Maharashtra" required>
+            <div class="form-hint">City helps calibrate regional pricing and vendor rates.</div>
+            <div class="form-error" id="locationError">Please enter a city or location.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Scale & Financials -->
+      <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 style="font-size: 1.25rem; color: var(--purple-900); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <span style="width: 28px; height: 28px; background: var(--purple-100); color: var(--purple-800); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-family: sans-serif;">2</span>
+          Scale, Guests & Budget
+        </h3>
+
+        <div class="form-row">
+          <!-- 5. Number of Guests -->
+          <div class="form-group">
+            <label class="form-label" for="guests">Number of Guests <span class="required">*</span></label>
+            <input type="number" id="guests" name="guests" class="form-control" placeholder="50" min="1" max="10000" value="75" required>
+            <div class="chips-container">
+              <span class="chip" onclick="setGuests(25)">25 Guests</span>
+              <span class="chip" onclick="setGuests(75)">75 Guests</span>
+              <span class="chip" onclick="setGuests(150)">150 Guests</span>
+              <span class="chip" onclick="setGuests(300)">300 Guests</span>
+              <span class="chip" onclick="setGuests(500)">500+ Guests</span>
+            </div>
+            <div class="form-error" id="guestsError">Please enter a valid guest count (minimum 1).</div>
+          </div>
+
+          <!-- 6. Total Budget in INR -->
+          <div class="form-group">
+            <label class="form-label" for="totalBudget">Total Budget in INR (₹) <span class="required">*</span></label>
+            <input type="number" id="totalBudget" name="total_budget" class="form-control" placeholder="150000" min="5000" value="150000" required>
+            <div class="chips-container">
+              <span class="chip" onclick="setBudget(50000)">₹50,000</span>
+              <span class="chip" onclick="setBudget(150000)">₹1,50,000</span>
+              <span class="chip" onclick="setBudget(300000)">₹3,00,000</span>
+              <span class="chip" onclick="setBudget(500000)">₹5,00,000</span>
+              <span class="chip" onclick="setBudget(1500000)">₹15,00,000</span>
+            </div>
+            <div class="form-hint" id="budgetFormattedHint">Current: ₹1,50,000</div>
+            <div class="form-error" id="budgetError">Please enter a valid positive budget.</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- 12. Planning Style -->
+          <div class="form-group">
+            <label class="form-label" for="planningStyle">Planning Style</label>
+            <select id="planningStyle" name="planning_style" class="form-control">
+              <option value="Balanced" selected>Balanced (Standard smart allocation)</option>
+              <option value="Budget-friendly">Budget-friendly (Cost-conscious, high value)</option>
+              <option value="Premium">Premium (Luxury finishes, top-tier vendors)</option>
+            </select>
+          </div>
+
+          <!-- 10. Duration -->
+          <div class="form-group">
+            <label class="form-label" for="duration">Event Duration</label>
+            <input type="text" id="duration" name="duration" class="form-control" placeholder="e.g. 4-5 hours, Evening banquet" value="4-5 hours">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Preferences & Creative Direction -->
+      <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 24px; margin-bottom: 24px;">
+        <h3 style="font-size: 1.25rem; color: var(--purple-900); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <span style="width: 28px; height: 28px; background: var(--purple-100); color: var(--purple-800); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-family: sans-serif;">3</span>
+          Atmosphere & Hospitality Preferences
+        </h3>
+
+        <div class="form-row">
+          <!-- 7. Preferred Theme -->
+          <div class="form-group">
+            <label class="form-label" for="theme">Preferred Theme / Aesthetic</label>
+            <input type="text" id="theme" name="theme" class="form-control" placeholder="e.g. Regal Velvet & Marigold Gold" value="Regal Velvet & Marigold Gold">
+            <div class="chips-container">
+              <span class="chip" onclick="setTheme('Royal Marigold & Velvet')">Royal Marigold</span>
+              <span class="chip" onclick="setTheme('Minimalist Botanical Garden')">Botanical Garden</span>
+              <span class="chip" onclick="setTheme('Enchanted Starlight Soirée')">Starlight Soirée</span>
+              <span class="chip" onclick="setTheme('Bohemian Terracotta Sunset')">Terracotta Sunset</span>
+              <span class="chip" onclick="setTheme('Retro Neon Party')">Retro Neon</span>
+            </div>
+          </div>
+
+          <!-- 8. Venue Preference -->
+          <div class="form-group">
+            <label class="form-label" for="venuePref">Venue Preference</label>
+            <select id="venuePref" name="venue_preference" class="form-control">
+              <option value="Flexible" selected>Flexible (Indoor or Outdoor)</option>
+              <option value="Indoor">Indoor (Banquet hall, hotel, club)</option>
+              <option value="Outdoor">Outdoor (Lawn, courtyard, terrace, beach)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- 9. Food Preference -->
+          <div class="form-group">
+            <label class="form-label" for="foodPref">Food & Catering Preference</label>
+            <select id="foodPref" name="food_preference" class="form-control">
+              <option value="Mixed" selected>Mixed (Vegetarian & Non-vegetarian)</option>
+              <option value="Vegetarian">Pure Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Non-vegetarian">Non-vegetarian</option>
+            </select>
+          </div>
+
+          <!-- 11. Special Requirements -->
+          <div class="form-group">
+            <label class="form-label" for="specialReqs">Special Requirements or Notes</label>
+            <input type="text" id="specialReqs" name="special_requirements" class="form-control" placeholder="e.g. Wheelchair ramp, live acoustic corner, Jain food counters">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <button type="reset" class="btn btn-secondary" onclick="resetForm()">
+          Clear Form
+        </button>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
+          <span>Generate AI Event Plan</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- AI Generation Loading Overlay -->
+    <div id="aiLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.96); border-radius: var(--radius-lg); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; z-index: 50; padding: 40px; text-align: center;">
+      <!-- Glowing Animated Icon -->
+      <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--purple-900), var(--purple-700)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-400); margin-bottom: 24px; box-shadow: 0 0 30px rgba(109, 40, 217, 0.4); animation: pulse 1.8s infinite;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/>
+        </svg>
+      </div>
+
+      <h3 style="font-size: 1.6rem; color: var(--purple-900); margin-bottom: 8px;">CelebrAI is Planning Your Moment</h3>
+      <p id="loadingStatusText" style="color: var(--gold-700); font-weight: 600; font-size: 1.05rem; min-height: 28px; margin-bottom: 20px;">
+        Initializing AI Event Architect...
+      </p>
+
+      <!-- Progress bar -->
+      <div style="width: 100%; max-width: 400px; height: 6px; background: #E5E7EB; border-radius: var(--radius-full); overflow: hidden; margin-bottom: 16px;">
+        <div id="loadingProgressBar" style="width: 15%; height: 100%; background: linear-gradient(90deg, var(--gold-500), var(--purple-600)); transition: width 0.4s ease;"></div>
+      </div>
+      <span style="font-size: 0.8rem; color: var(--text-muted);">Please wait while we craft your tailored blueprint...</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/event.js') }}"></script>
+<script>
+  // Set default minimum date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDateStr = tomorrow.toISOString().split('T')[0];
+  const dateInput = document.getElementById('eventDate');
+  dateInput.min = minDateStr;
+
+  // Default to 30 days from now
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() + 30);
+  dateInput.value = defaultDate.toISOString().split('T')[0];
+
+  // Read URL query parameter for event type if present
+  const urlParams = new URLSearchParams(window.location.search);
+  const typeParam = urlParams.get('type');
+  if (typeParam) {
+    const sel = document.getElementById('eventType');
+    for (let opt of sel.options) {
+      if (opt.value.toLowerCase() === typeParam.toLowerCase()) {
+        opt.selected = true;
+        break;
+      }
+    }
+  }
+
+  // Budget formatting helper
+  document.getElementById('totalBudget').addEventListener('input', function() {
+    const val = Number(this.value) || 0;
+    document.getElementById('budgetFormattedHint').innerText = `Current: ${formatINR(val)}`;
+  });
+
+  function setGuests(val) {
+    document.getElementById('guests').value = val;
+  }
+
+  function setBudget(val) {
+    document.getElementById('totalBudget').value = val;
+    document.getElementById('budgetFormattedHint').innerText = `Current: ${formatINR(val)}`;
+  }
+
+  function setTheme(name) {
+    document.getElementById('theme').value = name;
+  }
+
+  function resetForm() {
+    setTimeout(() => {
+      dateInput.value = defaultDate.toISOString().split('T')[0];
+      setBudget(150000);
+      setGuests(75);
+    }, 50);
+  }
+</script>
+{% endblock %}

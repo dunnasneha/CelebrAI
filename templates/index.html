@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}CelebrAI — Your Celebration, Perfectly Planned{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section style="background: radial-gradient(circle at 80% 20%, rgba(244, 63, 94, 0.08) 0%, rgba(245, 158, 11, 0.08) 35%, rgba(250, 247, 242, 1) 70%); padding: 80px 0 60px; overflow: hidden; position: relative;">
+  <div class="container" style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center;">
+    <div>
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid var(--border-subtle); padding: 6px 14px; border-radius: var(--radius-full); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+        <span style="color: var(--gold-500); display: flex;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6.4-4.8-6.4 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
+        </span>
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--purple-900);">AI-Powered Event Intelligence</span>
+        <span style="background: var(--purple-100); color: var(--purple-800); font-size: 0.7rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">GENAI</span>
+      </div>
+
+      <h1 style="font-size: 3.5rem; letter-spacing: -1px; margin-bottom: 20px; line-height: 1.15;">
+        Your Celebration, <br>
+        <span style="background: linear-gradient(135deg, var(--purple-900) 0%, var(--pink-600) 50%, var(--gold-600) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Perfecty Planned.
+        </span>
+      </h1>
+
+      <p style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 32px; max-width: 580px;">
+        Plan beautiful moments, effortlessly. From regal Indian weddings and milestone birthdays to high-energy college fests and festive galas — CelebrAI crafts bespoke budgets in INR, adaptive timelines, and complete vendor strategies in seconds.
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 40px;">
+        <a href="{{ url_for('create_event') }}" class="btn btn-primary btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>Create My Event Plan</span>
+        </a>
+        <a href="#features" class="btn btn-secondary btn-lg">
+          <span>Explore Features</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Trust highlights -->
+      <div style="display: flex; gap: 32px; border-top: 1px solid var(--border-subtle); padding-top: 24px;">
+        <div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--purple-900);">100%</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">Realistic INR Estimates</div>
+        </div>
+        <div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--purple-900);">Zero</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">Contingency Double-Counting</div>
+        </div>
+        <div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--purple-900);">1-Click</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">Executive PDF Export</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Visual Preview Card -->
+    <div>
+      <div class="card" style="position: relative; padding: 28px; background: linear-gradient(145deg, #FFFFFF, var(--bg-card-subtle)); border: 1.5px solid var(--border-subtle); transform: rotate(1deg); transition: transform 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+          <div>
+            <span class="badge badge-gold" style="margin-bottom: 8px;">Wedding Showcase</span>
+            <h3 style="font-size: 1.4rem; color: var(--purple-900);">Aarav & Diya's Royal Sangeet</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Udaipur, Rajasthan • 120 Guests</p>
+          </div>
+          <span style="background: var(--purple-100); color: var(--purple-800); font-weight: 800; padding: 6px 12px; border-radius: 8px; font-size: 1rem;">
+            ₹5,00,000
+          </span>
+        </div>
+
+        <!-- Metric mini-cards -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: var(--bg-cream); padding: 12px; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Venue & Courtyard</div>
+            <div style="font-weight: 700; color: var(--purple-900); font-size: 0.95rem;">₹1,40,000</div>
+          </div>
+          <div style="background: var(--bg-cream); padding: 12px; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Royal Catering</div>
+            <div style="font-weight: 700; color: var(--purple-900); font-size: 0.95rem;">₹1,50,000</div>
+          </div>
+          <div style="background: var(--gold-50); padding: 12px; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--gold-100);">
+            <div style="font-size: 0.75rem; color: var(--gold-700); text-transform: uppercase; font-weight: 600;">Contingency</div>
+            <div style="font-weight: 700; color: var(--gold-700); font-size: 0.95rem;">₹35,000</div>
+          </div>
+        </div>
+
+        <!-- Timeline preview snippet -->
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-bottom: 16px;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--purple-900); margin-bottom: 8px;">Upcoming Milestones:</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; background: var(--purple-50); padding: 8px 12px; border-radius: var(--radius-sm);">
+              <span style="color: var(--purple-900); font-weight: 600;">Stage & Lighting Sound Check</span>
+              <span class="badge badge-danger">Urgent</span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; background: #F9FAFB; padding: 8px 12px; border-radius: var(--radius-sm);">
+              <span style="color: var(--text-secondary);">Dispatch Motion Invites & RSVPs</span>
+              <span class="badge badge-neutral">Final Week</span>
+            </div>
+          </div>
+        </div>
+
+        <a href="{{ url_for('event_details', event_id=1) }}" class="btn btn-secondary btn-sm" style="width: 100%;">
+          View Sample Blueprint & Workspace &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Event Categories Section -->
+<section style="padding: 70px 0; background: #FFFFFF;">
+  <div class="container">
+    <div style="text-align: center; max-width: 650px; margin: 0 auto 48px;">
+      <span class="badge badge-purple" style="margin-bottom: 12px;">Tailored Intelligence</span>
+      <h2 style="font-size: 2.3rem; margin-bottom: 14px;">Plan Any Event, Big or Small</h2>
+      <p style="color: var(--text-secondary); font-size: 1rem;">
+        Whether it is an intimate family dinner or a 500-attendee cultural celebration, CelebrAI formulates customized budgets, themes, and agendas.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      <!-- Category 1: Wedding -->
+      <div class="card" style="text-align: left; padding: 28px;">
+        <div style="width: 50px; height: 50px; background: var(--pink-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--pink-600); margin-bottom: 18px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Weddings & Sangeet</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 18px;">
+          Multi-ceremony coordination, royal Indian menus, choreographed playlists, and lakeside or banquet venue contracts.
+        </p>
+        <a href="{{ url_for('create_event') }}?type=Wedding" class="btn btn-secondary btn-sm" style="width: 100%;">Plan Wedding &rarr;</a>
+      </div>
+
+      <!-- Category 2: Birthday -->
+      <div class="card" style="text-align: left; padding: 28px;">
+        <div style="width: 50px; height: 50px; background: var(--gold-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--gold-700); margin-bottom: 18px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/>
+            <path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/>
+            <path d="M2 21h20"/>
+            <path d="M7 8v3"/>
+            <path d="M12 8v3"/>
+            <path d="M17 8v3"/>
+            <path d="M7 4h.01"/>
+            <path d="M12 4h.01"/>
+            <path d="M17 4h.01"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Birthday Milestones</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 18px;">
+          From 1st birthday wonderlands to milestone 50th celebrations. Custom cake concepts, fun games, and party emcees.
+        </p>
+        <a href="{{ url_for('create_event') }}?type=Birthday" class="btn btn-secondary btn-sm" style="width: 100%;">Plan Birthday &rarr;</a>
+      </div>
+
+      <!-- Category 3: Anniversary -->
+      <div class="card" style="text-align: left; padding: 28px;">
+        <div style="width: 50px; height: 50px; background: var(--purple-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--purple-800); margin-bottom: 18px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="7"/>
+            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Anniversaries</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 18px;">
+          Silver, Golden, or intimate anniversaries with nostalgic storytelling, acoustic lounge sets, and candlelit ambiance.
+        </p>
+        <a href="{{ url_for('create_event') }}?type=Anniversary" class="btn btn-secondary btn-sm" style="width: 100%;">Plan Anniversary &rarr;</a>
+      </div>
+
+      <!-- Category 4: College Event -->
+      <div class="card" style="text-align: left; padding: 28px;">
+        <div style="width: 50px; height: 50px; background: #E0E7FF; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #4338CA; margin-bottom: 18px;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 8px;">College Fests & Galas</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 18px;">
+          Campus logistics, sound/stage setups, celebrity/band booking buffers, sponsorship tracking, and student crowd management.
+        </p>
+        <a href="{{ url_for('create_event') }}?type=College+Event" class="btn btn-secondary btn-sm" style="width: 100%;">Plan College Fest &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Showcase Section -->
+<section id="features" style="padding: 80px 0; background: var(--bg-cream);">
+  <div class="container">
+    <div style="text-align: center; max-width: 700px; margin: 0 auto 56px;">
+      <span class="badge badge-gold" style="margin-bottom: 12px;">Full-Stack Planning Architecture</span>
+      <h2 style="font-size: 2.4rem; margin-bottom: 16px;">Built for Effortless Execution</h2>
+      <p style="color: var(--text-secondary); font-size: 1rem;">
+        Everything you need to plan memorable gatherings with precision, transparency, and confidence.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px;">
+      <!-- Feature 1 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: var(--purple-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--purple-800);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Intelligent Budgeting in INR</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          Calculates category expenditures automatically with Indian numbering format (Lakhs/Crores). Isolates the contingency reserve to prevent double-counting and warns immediately if you exceed budget limits.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Remaining = Total Budget - Total Planned Expenses
+        </div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: var(--gold-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--gold-700);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Adaptive Date-Linked Timeline</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          No static or hardcoded dates. Every milestone is dynamically calculated relative to your actual event date across 5 distinct planning phases: Weeks Before, Final Week, Day Before, Event Day, and Post-Event.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Due Date = Event Date + Dynamic Milestone Offset
+        </div>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: var(--pink-100); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--pink-600);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Vendor Checklist & Negotiation</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          Know exactly what to ask caterers, decorators, and photographers. Provides critical vetting questions, estimated costs, and tracking across 'Not Started', 'Contacted', and 'Booked' statuses.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Status Tracking: Not Started &rarr; Contacted &rarr; Booked
+        </div>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: #ECFDF5; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--success);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Publication-Grade PDF Export</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          Powered by Python ReportLab. Generates a multi-page, beautifully styled celebration blueprint complete with budget tables, timeline schedules, creative styling, and risk management.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Direct Binary Stream: /api/events/{id}/pdf
+        </div>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: #EFF6FF; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #2563EB;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Ask CelebrAI Conversational AI</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          Stuck on a tricky seating plan, dietary choice, or rain backup? The built-in conversational AI assistant knows your specific event details and provides tailored, practical advice on demand.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Context-Aware Assistant: POST /api/chat
+        </div>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div style="width: 44px; height: 44px; background: #FEF3C7; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--gold-700);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 style="font-size: 1.25rem;">Proactive Risk Management</h3>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 14px;">
+          Anticipates unpredictable weather, supplier delay buffers, host emergency kits, and backup venue reservations so your celebration flows smoothly no matter what.
+        </p>
+        <div style="background: var(--bg-cream); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.8rem; font-family: monospace; color: var(--purple-900);">
+          Contingency Reserve & Safe Buffers Built-In
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section style="padding: 70px 0; background: linear-gradient(135deg, var(--purple-950) 0%, var(--purple-900) 100%); color: #FFFFFF; text-align: center;">
+  <div class="container" style="max-width: 800px;">
+    <span class="badge badge-gold" style="margin-bottom: 16px;">Get Started in Seconds</span>
+    <h2 style="font-size: 2.8rem; color: #FFFFFF; margin-bottom: 18px;">Ready to Plan Your Next Celebration?</h2>
+    <p style="font-size: 1.15rem; color: #E9D5FF; margin-bottom: 32px; line-height: 1.6;">
+      Enter your budget, guest count, and location. CelebrAI handles the math, timeline, menus, and logistics so you can focus on making beautiful memories.
+    </p>
+    <a href="{{ url_for('create_event') }}" class="btn btn-gold btn-lg">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Start Planning Your Event</span>
+    </a>
+  </div>
+</section>
+{% endblock %}
