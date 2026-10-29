@@ -1,0 +1,8 @@
+{
+  "name": "CelebrAI",
+  "description": "AI-Powered Celebration & Event Planner crafting bespoke budgets in INR, adaptive timelines, vendor checklists, and creative event blueprints.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
