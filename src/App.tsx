@@ -5,6 +5,7 @@ import { LandingView } from './views/LandingView';
 import { DashboardView } from './views/DashboardView';
 import { CreateEventView } from './views/CreateEventView';
 import { EventWorkspaceView } from './views/EventWorkspaceView';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { StorageService } from './services/storageService';
 import { CelebrationEvent, DashboardMetrics } from './types';
 
@@ -85,20 +86,33 @@ export function App() {
   const currentEvent = selectedEventId ? StorageService.getEventById(selectedEventId) : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1F2937]">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#2E1065] text-white px-4 py-2.5 rounded-xl shadow-lg text-xs sm:text-sm font-semibold flex items-center gap-2 border border-[#F59E0B]/30 animate-bounce">
-          <span>✨</span>
-          <span>{toastMessage}</span>
-        </div>
-      )}
+    <ErrorBoundary>
+      <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1F2937]">
+        {/* Skip to Main Content Link for Accessibility (WCAG 2.4.1) */}
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#2E1065] focus:text-white focus:rounded-xl focus:shadow-xl focus:outline-none"
+        >
+          Skip to main content
+        </a>
 
-      {/* Navigation Header */}
-      <Navbar currentView={currentView} onNavigate={handleNavigate} />
+        {/* Accessible Toast Notification */}
+        {toastMessage && (
+          <div 
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-6 right-6 z-50 bg-[#2E1065] text-white px-4 py-2.5 rounded-xl shadow-lg text-xs sm:text-sm font-semibold flex items-center gap-2 border border-[#F59E0B]/30 animate-bounce"
+          >
+            <span aria-hidden="true">✨</span>
+            <span>{toastMessage}</span>
+          </div>
+        )}
 
-      {/* Main Body */}
-      <main className="flex-1">
+        {/* Navigation Header */}
+        <Navbar currentView={currentView} onNavigate={handleNavigate} />
+
+        {/* Main Landmark */}
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {currentView === 'landing' && (
           <LandingView onNavigate={handleNavigate} sampleEventId={sampleEventId} />
         )}
@@ -140,6 +154,7 @@ export function App() {
       {/* Footer */}
       <Footer />
     </div>
+    </ErrorBoundary>
   );
 }
 

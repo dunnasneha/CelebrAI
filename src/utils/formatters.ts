@@ -80,5 +80,6 @@ export function getDaysRemaining(dateStr: string): number {
   const target = new Date(dateStr);
   target.setHours(0, 0, 0, 0);
   const diffTime = target.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(0, days);
 }

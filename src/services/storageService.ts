@@ -251,6 +251,13 @@ export const StorageService = {
     return newId;
   },
 
+  saveNewEventWithPlan(
+    eventPayload: Partial<CelebrationEvent>,
+    planResult: GeneratedPlanResult
+  ): string {
+    return this.saveGeneratedPlan(eventPayload, planResult);
+  },
+
   updateEvent(id: string, updates: Partial<CelebrationEvent>): boolean {
     const events: CelebrationEvent[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.EVENTS) || '[]');
     const idx = events.findIndex(e => e.id === id);
@@ -522,3 +529,5 @@ export const StorageService = {
     };
   }
 };
+
+export const storageService = StorageService;

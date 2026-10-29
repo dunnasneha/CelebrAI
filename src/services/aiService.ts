@@ -730,3 +730,26 @@ Offer proactive follow-up suggestions where helpful.`;
 
   return { reply, is_ai: false };
 }
+
+export const AIService = {
+  isAIAvailable,
+  generateEventPlan,
+  generateInvitation,
+  generateInvitations: (name: string, event_type?: string, date?: string, location?: string, theme?: string) => {
+    return generateInvitation({ name, event_type, event_date: date, location, theme });
+  },
+  improveTheme,
+  generateThemeSuggestions: improveTheme,
+  optimizeBudget,
+  suggestActivities,
+  generateActivitySuggestions: suggestActivities,
+  askCelebrAI,
+  askConcierge: (userMessage: string, eventName?: string, budget?: number | string) => {
+    return askCelebrAI({ name: eventName || 'Celebration', total_budget: Number(budget) || 100000 }, userMessage);
+  }
+};
+
+export const aiService = AIService;
+
+
+

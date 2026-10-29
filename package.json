@@ -7,6 +7,9 @@
     "dev": "vite --host 0.0.0.0 --port 3000",
     "build": "tsc && vite build",
     "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:python": "python3 -m unittest test_app.py",
+    "test:all": "vitest run && python3 -m unittest test_app.py",
     "preview": "vite preview --port 3000"
   },
   "dependencies": {
@@ -16,13 +19,14 @@
     "@google/genai": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@types/node": "^22.10.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^6.0.1",
-    "typescript": "^5.6.3",
     "tailwindcss": "^4.0.0",
-    "@tailwindcss/vite": "^4.0.0"
+    "typescript": "^5.6.3",
+    "vite": "^6.0.1",
+    "vitest": "^5.0.5"
   }
 }

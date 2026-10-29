@@ -1,6 +1,16 @@
 import { CelebrationEvent, BudgetItem, TimelineTask, Vendor } from '../types';
 import { formatINR } from '../utils/formatters';
 
+function escapeHtml(str: unknown): string {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export function exportEventToPrintablePDF(
   event: CelebrationEvent,
   budgetItems: BudgetItem[],

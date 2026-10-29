@@ -34,3 +34,12 @@ desktop.ini
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+# Node & Build artifacts
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+.output/
+

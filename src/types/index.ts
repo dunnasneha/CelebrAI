@@ -58,8 +58,8 @@ export interface BudgetItem {
   category: string;
   allocated_amount: number;
   actual_spent: number;
-  notes: string;
-  is_contingency: boolean;
+  notes?: string;
+  is_contingency?: boolean;
 }
 
 export interface BudgetSummary {
@@ -131,16 +131,17 @@ export interface CelebrationEvent {
   theme: string;
   venue_preference: VenuePreference | string;
   food_preference: FoodPreference | string;
-  duration: string;
-  special_requirements: string;
+  duration?: string;
+  special_requirements?: string;
   planning_style: PlanningStyle | string;
-  overview: OverviewConcept;
-  creative: CreativeBlueprint;
-  risk: RiskManagement;
-  status: 'Planning' | 'In Progress' | 'Confirmed' | 'Completed';
+  overview?: OverviewConcept;
+  creative?: CreativeBlueprint;
+  risk?: RiskManagement;
+  status?: 'Planning' | 'In Progress' | 'Confirmed' | 'Completed';
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
+
 
 export interface DashboardMetrics {
   total_events: number;
